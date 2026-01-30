@@ -24,5 +24,5 @@ cortex-code-skills/
     │   └── SKILL.md
     └── evals/
         └── eval_cases.csv
-		
+		 
 Why this structure: it keeps each pillar skill small and testable (recommended in skill best practices) and makes eval-driven iteration straightforward .
