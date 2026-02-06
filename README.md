@@ -1,17 +1,9 @@
 Well Architected Framework Cortex Code Skills
 
-(1) recommended repo layout, 
-(2) the orchestrator SKILL.md, 
-(3) a pillar SKILL.md (I’m starting with Security & Governance), 
-(4) a shared context schema, 
-(5) eval cases template + what to validate, and (6) a tight demo script.
-
 Everything below follows the skill structure + stopping-point patterns in your best-practices doc and the repo/eval workflow guidance .
 
 1) Recommended repo layout
 This matches how the skills repo expects each skill to be a self-contained directory with SKILL.md 
-README
-.
 
 cortex-code-skills/
 └── well-architected/
@@ -35,7 +27,7 @@ Why this structure: it keeps each pillar skill small and testable (recommended i
 
 ---
 name: waf-orchestrator
-description: >
+description:
   Run a Snowflake Well-Architected Framework (WAF) engagement end-to-end.
   Use when users ask for: well-architected review, WAF assessment, best practices review,
   architecture assessment, health check, posture review, pillar review (security, reliability,
@@ -43,13 +35,16 @@ description: >
   best practices assessment, architecture review.
 ---
 # Snowflake Well-Architected Framework (WAF) Orchestrator
+
 This skill runs a structured WAF engagement by:
 1) scoping the engagement,
 2) routing to pillar skills,
 3) consolidating findings into a customer-ready output,
 4) mapping items to automation candidates (PHC / Blueprints) when applicable.
+
 ## When to Use / Load
 Use this skill when the user wants a WAF engagement, pillar assessment, or best-practices posture review.
+
 Do NOT use for:
 - single SQL tuning requests
 - unrelated Snowflake feature Q&A
@@ -77,8 +72,8 @@ Constraints:
 	• Regulated data? (Yes/No)
 	• Multi-cloud / cross-region needs? (Yes/No)
 	• Timeline: (weeks/months)
-
 **STOP** until user responds.
+
 ### Step 3: Select pillars (MANDATORY)
 Ask the user:
 Which pillar(s) should we run?
@@ -88,11 +83,11 @@ Which pillar(s) should we run?
 	4. Cost Optimization & FinOps
 	5. Operational Excellence
 Please select (1-5).
-
 **STOP** until user responds.
 
 ### Step 4: Route to pillar skills (Intent Table)
 Use a single routing table (keep routing logic centralized).
+
 | Pillar | Load Skill Directory |
 |---|---|
 | 1 | well-architected/waf-security-governance |
@@ -105,6 +100,7 @@ For each selected pillar:
 1) **Load** the pillar skill.
 2) Provide the shared context (see “Context Schema” below).
 3) Run the pillar workflow and collect outputs.
+
 ### Step 5: Consolidate findings (MANDATORY)
 Combine pillar outputs into:
 - Executive summary (what matters + why)
@@ -112,6 +108,7 @@ Combine pillar outputs into:
 - Quick wins (1-2 week items)
 - Strategic improvements (30-90 day items)
 - Suggested next steps and owners (SE/TAM/PS/Partner)
+
 ### Step 6: Automation mapping (Optional)
 If the user asks, or if findings are repetitive/measurable:
 - Flag items suitable for Proactive Health Check (PHC)
@@ -125,6 +122,7 @@ Present the final report in this structure:
 4) Automation candidates (PHC / Blueprints)
 5) Proposed engagement plan (who does what)
 **STOP** and ask:
+
 Do you want this formatted as:
 	1. Customer-ready summary
 	2. Internal delivery plan (RACI)
@@ -146,7 +144,7 @@ well-architected/waf-security-governance/SKILL.md
 
 ---
 name: waf-security-governance
-description: >
+description:
   Run the WAF Security & Governance pillar assessment.
   Use for Snowflake access control, RBAC, privacy, encryption, network security,
   data collaboration controls, governance policies, and auditability.
@@ -168,6 +166,7 @@ Use:
 - priority_goals
 If any are missing, request them and STOP.
 ## Workflow
+
 ### Step 1: Current-state discovery (MANDATORY)
 Ask the user:
 Answer what you can (unknown is fine):
@@ -190,7 +189,6 @@ Answer what you can (unknown is fine):
 	6. Data collaboration:
 	• Sharing / clean rooms used? (Yes/No)
 	• Any restrictions on outbound sharing? (Yes/No)
-
 **STOP** until user responds.
 
 ### Step 2: Assess against best-practice themes
@@ -241,10 +239,8 @@ Approve these findings for inclusion in the consolidated WAF report? (Yes/No/Edi
 A structured Security & Governance pillar assessment with prioritized recommendations and optional automation candidates.
 This uses explicit approval gates and stopping points as required in the best practices .
 
-4) Shared context schema (passed from orchestrator → pillar skills)
+4) Shared context schema (passed from orchestrator -> pillar skills)
 Keep this small (skills compete for context window) 
-SKILL_BEST_PRACTICES
-.
 
 ## Context Schema (Orchestrator → Pillars)
 engagement:
@@ -261,8 +257,8 @@ artifacts:
   available_inputs: [<string>, ...]  # e.g., "PHC output", "account usage exports", "RBAC doc"
 
 5) Eval-driven development: what to write + how to validate
-The repo guidance is explicit: eval cases are the spec and you measure improvements via Pass@k . The handbook also clarifies each eval has setup/execution/validation steps and validation should be a checklist .
 A practical eval plan (WAF-focused)
+
 Start with 6 eval cases:
 	1. Full WAF, all pillars, regulated, multi-region
 	2. Single pillar: Security, regulated, private connectivity required
@@ -271,21 +267,23 @@ Start with 6 eval cases:
 	5. Workload scope: GenAI app + governance concerns
 	6. “Confusion test”: user asks a vague request; orchestrator must stop and ask scope/pillars
 CSV template (fields vary by your internal eval harness)
-I won’t invent exact column names, but your docs confirm you need:
+
+We need:
 	• a unique CONV_ID
 	• clear user instruction (“WHAT not HOW”)
 	• prerequisites
 	• validation type + checklist
 	• skill directories included in the run
+
 Example structure you can adapt:
 
 CONV_ID,USER_INSTRUCTION,PREREQUISITES,SKILL_DIRECTORIES,VALIDATION
 waf-orch-scope-gating,"Run a WAF review. I’m not sure which pillar. Ask me the right questions first.",,"well-architected/waf-orchestrator","generic: must ask scope + goals + pillar selection; must STOP after questions"
 waf-sec-regulated,"Do a Security & Governance WAF review for a regulated healthcare workload with strict network isolation.",,"well-architected/waf-orchestrator;well-architected/waf-security-governance","generic: must produce R/Y/G categories + prioritized Now/Next/Later + approval gate"
+
 Validation checklist examples
 Use checklist-style validation as recommended 
-Coding Agent Developer Handbook
-:
+Coding Agent Developer Handbook:
 	• Did it ask scope first?
 	• Did it ask goals/constraints?
 	• Did it route correctly to the pillar skill?
@@ -294,7 +292,7 @@ Coding Agent Developer Handbook
 	• Did it include a mandatory approval gate?
 
 6) Data Summit demo script (8–10 minutes, crisp)
-Goal: show “WAF is executable” + “Snowflake differentiator: guidance → automation”.
+Goal: show “WAF is executable” + “Snowflake differentiator: guidance -> automation”.
 Demo flow
 	1. Set the scene (30s)
 		○ “Customer wants a WAF review for a GenAI + analytics platform. They need security posture, cost control, and reliability.”
@@ -325,4 +323,5 @@ Use Cortex Code WAF skills:
 	• Post-incident (systematic reliability/process improvements)
 	• Before scale / new workloads (performance + cost guardrails)
 	• During modernization (standardize practices + reduce drift)
-And internally, your teams use the same thing to ensure a consistent deliverable across SE/TAM/PS/Partners.<img width="1480" height="12070" alt="image" src="https://github.com/user-attachments/assets/d489db0f-766a-4d4f-8920-e6ea8d5a1b45" />
+
+And internally, teams use the same thing to ensure a consistent deliverable across SE/TAM/PS/Partners.
