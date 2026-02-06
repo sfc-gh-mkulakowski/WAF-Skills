@@ -325,4 +325,4 @@ Use Cortex Code WAF skills:
 	• Post-incident (systematic reliability/process improvements)
 	• Before scale / new workloads (performance + cost guardrails)
 	• During modernization (standardize practices + reduce drift)
-And internally, your teams use the same thing to ensure a consistent deliverable across SE/TAM/PS/Partners.
+And internally, your teams use the same thing to ensure a consistent deliverable across SE/TAM/PS/Partners.<img width="1480" height="12070" alt="image" src="https://github.com/user-attachments/assets/d489db0f-766a-4d4f-8920-e6ea8d5a1b45" />
